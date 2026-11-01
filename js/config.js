@@ -8,7 +8,5 @@ window.IMPORT_PUBLIC_CONFIG = {
   // Adresses des deux sites (à changer quand le domaine sera acheté)
   urlSite: 'https://importpublic.com',
   urlEquipe: 'https://equipe.importpublic.com',
-  urlData: 'https://data.importpublic.com',
-  // Passer à true une fois Google activé dans Supabase (Authentication > Sign In / Providers > Google)
-  google: false
+  urlData: 'https://data.importpublic.com'
 };
