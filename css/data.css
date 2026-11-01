@@ -181,3 +181,10 @@ tr:hover td { background: #f8f9fa; }
 .bouton-secondaire { height: 36px; padding: 0 14px; border: 1px solid var(--bord); border-radius: 6px; background: #fff; color: var(--bleu); font-weight: 500; cursor: pointer; }
 .bouton-secondaire:hover { background: var(--bleu-clair); }
 .bouton-danger { color: var(--baisse); }
+
+/* Connexion avec Google */
+.btn-google { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 10px 14px; background: #fff; color: #1f1f1f;
+  border: 1px solid #dadce0; border-radius: 6px; font: inherit; font-weight: 500; cursor: pointer; }
+.btn-google:hover { background: #f8f9fa; }
+.separateur { display: flex; align-items: center; gap: 10px; margin: 14px 0 6px; color: var(--texte-2); font-size: .85rem; }
+.separateur::before, .separateur::after { content: ''; flex: 1; height: 1px; background: var(--bord); }

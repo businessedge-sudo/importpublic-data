@@ -88,13 +88,15 @@
     vue.innerHTML = `<form class="connexion" id="f">
       <h1>Analyses Import Public</h1>
       <p>Connectez-vous avec le compte auquel les analyses ont été partagées.</p>
+      ${window.IA.boutonGoogle('Se connecter avec Google')}
       <label for="e">Email</label><input id="e" type="email" autocomplete="email" required>
       <label for="p">Mot de passe</label><input id="p" type="password" autocomplete="current-password" required>
       <button class="bouton-bleu">Se connecter</button>
       <div id="msg"></div></form>`;
+    window.IA.brancherGoogle(vue);
     document.getElementById('f').addEventListener('submit', async (ev) => {
       ev.preventDefault();
-      const b = ev.target.querySelector('button'); b.disabled = true;
+      const b = ev.target.querySelector('button:not([type=button])'); b.disabled = true;
       const { error } = await sb.auth.signInWithPassword({ email: document.getElementById('e').value.trim(), password: document.getElementById('p').value });
       b.disabled = false;
       if (error) document.getElementById('msg').innerHTML = `<p class="erreur" style="margin-top:12px">${esc(msgErreur(error))}</p>`;
