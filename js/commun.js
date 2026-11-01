@@ -88,15 +88,28 @@
     nouvelle: 'Nouvelle', devis_envoye: 'Devis envoyé', acceptee: 'Acceptée', refusee: 'Refusée',
     initie: 'En vérification', confirme: 'Validé', echoue: 'Rejeté', rembourse: 'Remboursé',
     tmoney: 'T-Money', flooz: 'Flooz', aerien: 'Aérien', maritime: 'Maritime',
-    client: 'Client', groupeur: 'Assistant', admin: 'Admin', assistant: 'Assistant', representant: 'Représentant'
+    client: 'Client', groupeur: 'Assistant', admin: 'Admin', assistant: 'Assistant', representant: 'Représentant',
+    partenaire: 'Point de retrait',
+    // Commandes assistées
+    a_confirmer: 'À confirmer', en_attente_client: 'À confirmer par le client', confirmee: 'Confirmée',
+    // Colis
+    attendu: 'En route vers le point', recu: 'Prêt au retrait', remis: 'Remis', non_recupere: 'Non récupéré', litige: 'Litige',
+    // Commissions et ambassadeurs
+    en_attente: 'En attente', validee: 'Validée', acquisition: 'Nouveau client', assistance: 'Assistance',
+    actif: 'Actif', suspendu: 'Suspendu', due: 'À payer', especes: 'Espèces', virement: 'Virement'
   };
   const lib = (k) => LIB[k] || k;
   const TON = {
     ouverte: 'info', quota_atteint: 'ok', echec_quota: 'ko', terminee: 'neutre', brouillon: 'neutre',
     en_attente_paiement: 'alerte', payee: 'ok', a_rembourser: 'ko', remboursee: 'neutre', annulee: 'neutre', livree: 'ok',
     nouvelle: 'alerte', devis_envoye: 'info', acceptee: 'alerte', refusee: 'neutre',
-    initie: 'alerte', confirme: 'ok', echoue: 'ko'
+    initie: 'alerte', confirme: 'ok', echoue: 'ko',
+    a_confirmer: 'alerte', en_attente_client: 'alerte', confirmee: 'ok',
+    attendu: 'info', recu: 'alerte', remis: 'ok', non_recupere: 'ko', litige: 'ko',
+    en_attente: 'alerte', validee: 'info', actif: 'ok', suspendu: 'ko', due: 'alerte'
   };
+  // { Taille: '42', Couleur: 'Noir' } -> « Taille : 42 · Couleur : Noir »
+  const txtVariante = (v) => Object.entries(v || {}).map(([k, x]) => `${k} : ${x}`).join(' · ');
   const badge = (statut) => `<span class="badge badge-${TON[statut] || 'info'}">${esc(lib(statut))}</span>`;
 
   // Frise de suivi : étapes passées (datées), étape courante, étapes à venir
@@ -174,7 +187,7 @@
 
   window.IA = {
     sb, cfg, fcfa, date, joursRestants, esc, normTel, waLien, ETAPES_CAMPAGNE, ETAPES_DEMANDE, PAYS, nomPays, optionsPays, listeRegions,
-    lib, badge, frise, jauge, msgErreur, toast, compresserImage, urlImageCampagne, occupe
+    lib, badge, frise, jauge, msgErreur, toast, compresserImage, urlImageCampagne, occupe, txtVariante
   };
 })();
 
