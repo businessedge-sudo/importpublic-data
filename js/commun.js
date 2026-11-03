@@ -96,7 +96,10 @@
     attendu: 'En route vers le point', recu: 'Prêt au retrait', remis: 'Remis', non_recupere: 'Non récupéré', litige: 'Litige',
     // Commissions et ambassadeurs
     en_attente: 'En attente', validee: 'Validée', acquisition: 'Nouveau client', assistance: 'Assistance',
-    actif: 'Actif', suspendu: 'Suspendu', due: 'À payer', especes: 'Espèces', virement: 'Virement'
+    actif: 'Actif', suspendu: 'Suspendu', due: 'À payer', especes: 'Espèces', virement: 'Virement',
+    // Produits à l'étude
+    idee: 'Idée', recherche: 'Recherche', analyse: 'Analyse', estimation: 'Estimation des coûts', lancee: 'Lancée', abandonnee: 'Abandonnée',
+    fournisseur: 'Fournisseur', transport: 'Transport', douane: 'Douane', local: 'Frais locaux', autre: 'Autre'
   };
   const lib = (k) => LIB[k] || k;
   const TON = {
@@ -106,7 +109,8 @@
     initie: 'alerte', confirme: 'ok', echoue: 'ko',
     a_confirmer: 'alerte', en_attente_client: 'alerte', confirmee: 'ok',
     attendu: 'info', recu: 'alerte', remis: 'ok', non_recupere: 'ko', litige: 'ko',
-    en_attente: 'alerte', validee: 'info', actif: 'ok', suspendu: 'ko', due: 'alerte'
+    en_attente: 'alerte', validee: 'info', actif: 'ok', suspendu: 'ko', due: 'alerte',
+    idee: 'neutre', recherche: 'info', analyse: 'info', estimation: 'alerte', lancee: 'ok', abandonnee: 'neutre'
   };
   // { Taille: '42', Couleur: 'Noir' } -> « Taille : 42 · Couleur : Noir »
   const txtVariante = (v) => Object.entries(v || {}).map(([k, x]) => `${k} : ${x}`).join(' · ');
