@@ -89,7 +89,7 @@
     initie: 'En vérification', confirme: 'Validé', echoue: 'Rejeté', rembourse: 'Remboursé',
     tmoney: 'T-Money', flooz: 'Flooz', aerien: 'Aérien', maritime: 'Maritime',
     client: 'Client', groupeur: 'Assistant', admin: 'Admin', assistant: 'Assistant', representant: 'Représentant',
-    partenaire: 'Point de retrait',
+    partenaire: 'Représentant',
     // Commandes assistées
     a_confirmer: 'À confirmer', en_attente_client: 'À confirmer par le client', confirmee: 'Confirmée',
     // Colis
