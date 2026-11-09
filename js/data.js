@@ -175,7 +175,7 @@
 
   function ecart(a, b) {
     a = Number(a) || 0; b = Number(b) || 0;
-    if (!b) return a ? '<span class="ecart neutre">Nouveau</span>' : '<span class="ecart neutre">—</span>';
+    if (!b) return a ? '<span class="ecart neutre">Nouveau</span>' : '<span class="ecart neutre">-</span>';
     const p = ((a - b) / b) * 100;
     const cls = p > 0.5 ? 'hausse' : p < -0.5 ? 'baisse' : 'neutre';
     const fl = p > 0.5 ? '▲' : p < -0.5 ? '▼' : '';
@@ -285,7 +285,7 @@
       <div class="grille">
         ${score('Clients inscrits (total)', nombre(totalClients))}
         ${score('Clients ayant acheté', nombre(totalAcheteurs))}
-        ${score('Taux d\'achat', totalClients ? Math.round(100 * totalAcheteurs / totalClients) + ' %' : '—')}
+        ${score('Taux d\'achat', totalClients ? Math.round(100 * totalAcheteurs / totalClients) + ' %' : '-')}
         ${score('Clients actifs sur la période', nombre(r.actuel.clients_actifs), r.actuel.clients_actifs, r.precedent.clients_actifs)}
         <div class="composant g4"><h2>Clients par pays</h2><p class="aide">Pays déclaré à l'inscription.</p>
           <div class="zone-graphique"><canvas id="g-pays" aria-label="Clients par pays"></canvas></div></div>
@@ -323,7 +323,7 @@
       ${entete('Sur mesure et paiements', 'Conversion des demandes, moyens de paiement, état des commandes.')}
       <div class="grille">
         ${score('Demandes sur mesure', nombre(r.actuel.demandes), r.actuel.demandes, r.precedent.demandes)}
-        ${score('Taux de conversion', e.recues ? Math.round(100 * e.payees / e.recues) + ' %' : '—')}
+        ${score('Taux de conversion', e.recues ? Math.round(100 * e.payees / e.recues) + ' %' : '-')}
         ${score('Paiements validés', nombre(r.actuel.nb_paiements), r.actuel.nb_paiements, r.precedent.nb_paiements)}
         ${score('Paiements à vérifier', nombre(r.en_attente.paiements), 0, undefined, ' alerte')}
         <div class="composant g6"><h2>Entonnoir des demandes sur mesure</h2><p class="aide">De la demande au paiement.</p>

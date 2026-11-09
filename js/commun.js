@@ -6,10 +6,10 @@
   });
 
   const fcfa = (n) =>
-    n == null ? '—' : new Intl.NumberFormat('fr-FR').format(Number(n)).replace(/ | /g, ' ') + ' F';
+    n == null ? '-' : new Intl.NumberFormat('fr-FR').format(Number(n)).replace(/ | /g, ' ') + ' F';
 
   const date = (d, avecHeure) => {
-    if (!d) return '—';
+    if (!d) return '-';
     const o = { day: 'numeric', month: 'short' };
     if (avecHeure) { o.hour = '2-digit'; o.minute = '2-digit'; }
     return new Date(d).toLocaleDateString('fr-FR', o);
@@ -40,7 +40,7 @@
     GH: ['Greater Accra', 'Ashanti', 'Volta', 'Oti', 'Eastern', 'Central', 'Western', 'Western North', 'Bono', 'Bono East', 'Ahafo',
          'Northern', 'Savannah', 'North East', 'Upper East', 'Upper West']
   };
-  const nomPays = (c) => (PAYS.find((p) => p[0] === c) || [c, c || '—'])[1];
+  const nomPays = (c) => (PAYS.find((p) => p[0] === c) || [c, c || '-'])[1];
   const optionsPays = (sel) => PAYS.map(([c, n]) => `<option value="${c}"${c === (sel || 'TG') ? ' selected' : ''}>${n}</option>`).join('');
   const listeRegions = (pays) => (REGIONS[pays] || []).map((r) => `<option value="${r}">`).join('');
 
