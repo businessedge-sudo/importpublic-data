@@ -180,6 +180,19 @@
     chemin && /^https?:/.test(chemin) ? chemin
       : chemin ? sb.storage.from('campagnes').getPublicUrl(chemin).data.publicUrl : '';
 
+  // Bloc prix « marketing » : notre prix, le prix constaté à Lomé barré, et l'économie en francs
+  const blocPrix = (c, petit) => {
+    const ref = Number(c.prix_reference) || 0;
+    const prix = Number(c.prix_unitaire) || 0;
+    const eco = ref > prix ? ref - prix : 0;
+    const pct = eco ? Math.round((100 * eco) / ref) : 0;
+    return `<div class="bloc-prix${petit ? ' petit' : ''}">
+      <div class="bp-haut"><span class="bp-prix">${fcfa(prix)}</span>
+        ${pct >= 5 ? `<span class="bp-avant"><small>À Lomé</small><s>${fcfa(ref)}</s></span>` : ''}</div>
+      ${pct >= 5 ? `<div class="bp-eco"><span class="bp-long">Vous économisez</span><span class="bp-court">Économie</span><b>${fcfa(eco)}</b><em>-${pct} %</em></div>` : ''}
+    </div>`;
+  };
+
   // Désactive un bouton pendant une action asynchrone
   const occupe = async (bouton, action) => {
     const texte = bouton.textContent;
@@ -191,7 +204,7 @@
 
   window.IA = {
     sb, cfg, fcfa, date, joursRestants, esc, normTel, waLien, ETAPES_CAMPAGNE, ETAPES_DEMANDE, PAYS, nomPays, optionsPays, listeRegions,
-    lib, badge, frise, jauge, msgErreur, toast, compresserImage, urlImageCampagne, occupe, txtVariante
+    lib, badge, frise, jauge, msgErreur, toast, compresserImage, urlImageCampagne, occupe, txtVariante, blocPrix
   };
 })();
 
