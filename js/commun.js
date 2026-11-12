@@ -193,6 +193,42 @@
     </div>`;
   };
 
+  // Compte à rebours d'une campagne : temps restant + barre qui avance jusqu'à la clôture
+  // (aucun chiffre sur le nombre de commandes n'est montré au client)
+  const restant = (d, court) => {
+    const ms = new Date(d) - Date.now();
+    if (ms <= 0) return null;
+    const j = Math.floor(ms / 86400000), h = Math.floor((ms % 86400000) / 3600000), m = Math.floor((ms % 3600000) / 60000);
+    if (court && j >= 1) return `${j} j ${h} h`;
+    if (j >= 2) return `${j} jours${h ? ' ' + h + ' h' : ''}`;
+    if (j === 1) return `1 jour ${h} h`;
+    if (h >= 1) return `${h} h ${String(m).padStart(2, '0')} min`;
+    return `${Math.max(1, m)} min`;
+  };
+  const delaiCampagne = (c, petit) => {
+    const fin = new Date(c.date_cloture).getTime();
+    const debut = new Date(c.ouverte_le || c.created_at || Date.now() - 86400000).getTime();
+    const pct = Math.max(2, Math.min(100, Math.round((100 * (Date.now() - debut)) / Math.max(1, fin - debut))));
+    const r = restant(c.date_cloture, petit);
+    const urgent = r && fin - Date.now() < 3 * 86400000;
+    return `<div class="delai${petit ? ' petit' : ''}${urgent ? ' urgent' : ''}" data-cloture="${esc(c.date_cloture)}" data-debut="${debut}">
+      <div class="delai-tete"><span>⏳ ${r ? `${petit ? 'Fin dans' : 'Clôture dans'} <b>${r}</b>` : '<b>Campagne clôturée</b>'}</span>
+        ${petit ? '' : `<small>${esc(new Date(c.date_cloture).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }))}</small>`}</div>
+      <div class="delai-barre"><span style="width:${r ? pct : 100}%"></span></div>
+      ${r ? `<p class="delai-msg">${urgent ? 'Dernière ligne droite : commandez maintenant pour profiter de ce prix.' : 'Offre limitée dans le temps : commandez avant la clôture pour profiter de ce prix.'}</p>` : ''}
+    </div>`;
+  };
+  // Met à jour les comptes à rebours affichés (appelé chaque minute)
+  const rafraichirDelais = () => document.querySelectorAll('.delai[data-cloture]').forEach((el) => {
+    const fin = new Date(el.dataset.cloture).getTime(), debut = Number(el.dataset.debut);
+    const r = restant(el.dataset.cloture, el.classList.contains('petit'));
+    const b = el.querySelector('.delai-tete b');
+    if (b) b.textContent = r || 'Campagne clôturée';
+    const barre = el.querySelector('.delai-barre span');
+    if (barre) barre.style.width = (r ? Math.max(2, Math.min(100, Math.round((100 * (Date.now() - debut)) / Math.max(1, fin - debut)))) : 100) + '%';
+  });
+  setInterval(rafraichirDelais, 60000);
+
   // Désactive un bouton pendant une action asynchrone
   const occupe = async (bouton, action) => {
     const texte = bouton.textContent;
@@ -204,7 +240,7 @@
 
   window.IA = {
     sb, cfg, fcfa, date, joursRestants, esc, normTel, waLien, ETAPES_CAMPAGNE, ETAPES_DEMANDE, PAYS, nomPays, optionsPays, listeRegions,
-    lib, badge, frise, jauge, msgErreur, toast, compresserImage, urlImageCampagne, occupe, txtVariante, blocPrix
+    lib, badge, frise, jauge, msgErreur, toast, compresserImage, urlImageCampagne, occupe, txtVariante, blocPrix, delaiCampagne, rafraichirDelais
   };
 })();
 
