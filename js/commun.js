@@ -160,10 +160,19 @@
   };
 
   // Réduit une photo avant envoi (connexions lentes) : 1280 px max, JPEG
+  // Réduit l'image en JPEG. Si le navigateur ne sait pas la lire (HEIC d'iPhone, format exotique),
+  // on garde le fichier d'origine quand c'est un JPEG, PNG ou WebP de moins de 5 Mo, sinon message clair.
   const compresserImage = (fichier, max = 1280, qualite = 0.8) =>
+    compresserImageBrut(fichier, max, qualite).catch((e) => {
+      if (/^image\/(jpeg|png|webp)$/.test(fichier.type) && fichier.size < 5 * 1024 * 1024) return fichier;
+      throw new Error(`La photo « ${fichier.name || 'sans nom'} » n'a pas pu être lue (${fichier.type || 'format inconnu'}). Enregistrez-la en JPG ou PNG puis réessayez.`);
+    });
+  const compresserImageBrut = (fichier, max, qualite) =>
     new Promise((ok, ko) => {
       const img = new Image();
+      const delai = setTimeout(() => ko(new Error('Lecture de l\'image trop longue')), 20000);
       img.onload = () => {
+        clearTimeout(delai);
         const r = Math.min(1, max / Math.max(img.width, img.height));
         const c = document.createElement('canvas');
         c.width = Math.round(img.width * r);
@@ -172,7 +181,7 @@
         c.toBlob((b) => (b ? ok(b) : ko(new Error('Image illisible'))), 'image/jpeg', qualite);
         URL.revokeObjectURL(img.src);
       };
-      img.onerror = () => ko(new Error('Ce fichier n\'est pas une image lisible'));
+      img.onerror = () => { clearTimeout(delai); ko(new Error('Ce fichier n\'est pas une image lisible')); };
       img.src = URL.createObjectURL(fichier);
     });
 
@@ -235,6 +244,11 @@
     bouton.disabled = true;
     bouton.textContent = 'Patiente…';
     try { return await action(); }
+    catch (e) {
+      // Plus jamais d'échec silencieux : toute erreur s'affiche
+      console.error(e);
+      toast(msgErreur(e), 'ko');
+    }
     finally { bouton.disabled = false; bouton.textContent = texte; }
   };
 
