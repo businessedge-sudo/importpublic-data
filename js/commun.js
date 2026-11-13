@@ -163,10 +163,35 @@
   // Réduit l'image en JPEG. Si le navigateur ne sait pas la lire (HEIC d'iPhone, format exotique),
   // on garde le fichier d'origine quand c'est un JPEG, PNG ou WebP de moins de 5 Mo, sinon message clair.
   const compresserImage = (fichier, max = 1280, qualite = 0.8) =>
-    compresserImageBrut(fichier, max, qualite).catch((e) => {
+    compresserImageBrut(fichier, max, qualite).catch(async (e) => {
+      // Photo d'iPhone (HEIC) : conversion en JPEG dans le navigateur
+      if (estHeic(fichier)) {
+        const jpeg = await convertirHeic(fichier).catch(() => null);
+        if (jpeg) return compresserImageBrut(jpeg, max, qualite).catch(() => jpeg);
+      }
       if (/^image\/(jpeg|png|webp)$/.test(fichier.type) && fichier.size < 5 * 1024 * 1024) return fichier;
       throw new Error(`La photo « ${fichier.name || 'sans nom'} » n'a pas pu être lue (${fichier.type || 'format inconnu'}). Enregistrez-la en JPG ou PNG puis réessayez.`);
     });
+  const estHeic = (f) => /heic|heif/i.test(f.type || '') || /\.(heic|heif)$/i.test(f.name || '');
+  const convertirHeic = async (f) => {
+    if (!window.heic2any) {
+      await new Promise((ok, ko) => {
+        const sc = document.createElement('script');
+        sc.src = 'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
+        sc.onload = ok; sc.onerror = () => ko(new Error('Conversion HEIC indisponible'));
+        document.head.appendChild(sc);
+      });
+    }
+    const b = await window.heic2any({ blob: f, toType: 'image/jpeg', quality: 0.85 });
+    return Array.isArray(b) ? b[0] : b;
+  };
+  // Vérifie qu'une image se lit dans le navigateur (aperçu)
+  const imageLisible = (fichier) => new Promise((ok) => {
+    const img = new Image(); const u = URL.createObjectURL(fichier);
+    img.onload = () => { URL.revokeObjectURL(u); ok(true); };
+    img.onerror = () => { URL.revokeObjectURL(u); ok(false); };
+    img.src = u;
+  });
   const compresserImageBrut = (fichier, max, qualite) =>
     new Promise((ok, ko) => {
       const img = new Image();
@@ -254,7 +279,7 @@
 
   window.IA = {
     sb, cfg, fcfa, date, joursRestants, esc, normTel, waLien, ETAPES_CAMPAGNE, ETAPES_DEMANDE, PAYS, nomPays, optionsPays, listeRegions,
-    lib, badge, frise, jauge, msgErreur, toast, compresserImage, urlImageCampagne, occupe, txtVariante, blocPrix, delaiCampagne, rafraichirDelais
+    lib, badge, frise, jauge, msgErreur, toast, compresserImage, imageLisible, estHeic, convertirHeic, urlImageCampagne, occupe, txtVariante, blocPrix, delaiCampagne, rafraichirDelais
   };
 })();
 
