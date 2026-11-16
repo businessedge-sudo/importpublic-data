@@ -283,7 +283,8 @@
   // Partage d'une campagne (WhatsApp, groupe, réseaux) : texte marketing prêt, lien vers la page de la campagne.
   // code = code ambassadeur facultatif, pour que les ventes lui soient attribuées.
   const lienCampagnePublic = (id, code) => `${cfg.urlSite}/${code ? '?ac=' + encodeURIComponent(code) : ''}#/campagne/${id}`;
-  const messagePartage = (c, url) => {
+  const lienSurMesurePublic = (code) => `${cfg.urlSite}/${code ? '?ac=' + encodeURIComponent(code) : ''}#/sur-mesure`;
+  const messagePartage = (c, url, code) => {
     const prix = Number(c.prix_unitaire) || 0;
     const ref = Number(c.prix_reference) || 0;
     const cout = prix + (Number(c.frais_douane_unitaire) || 0);
@@ -297,25 +298,30 @@
       fin ? `⏳ Commandes ouvertes jusqu'au ${fin}` : null,
       '📦 Commande groupée depuis la Chine, retrait à Lomé ou livraison chez vous',
       '',
-      `👉 Réservez votre part ici : ${url}`
+      `👉 Réservez votre part ici : ${url}`,
+      '',
+      `🔎 Ce produit ne vous intéresse pas ? Vous avez un autre produit en tête ? Commandez-le sur mesure ici : ${lienSurMesurePublic(code)}`
     ].filter((l) => l !== null).join('\n');
   };
-  async function partagerCampagne(c, code) {
-    const url = lienCampagnePublic(c.id, code);
-    const texte = messagePartage(c, url);
-    if (navigator.share) {
-      try { await navigator.share({ title: c.titre, text: texte }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
-    }
-    window.open('https://wa.me/?text=' + encodeURIComponent(texte), '_blank', 'noopener');
+  // Ouvre directement WhatsApp avec le message prêt : on choisit ensuite le contact ou le groupe.
+  // Téléphone : l'application WhatsApp. Ordinateur : WhatsApp Web dans le navigateur (wa.me y bloque sur une page intermédiaire).
+  const estMobile = () => /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  function partagerCampagne(c, code) {
+    const texte = encodeURIComponent(messagePartage(c, lienCampagnePublic(c.id, code), code));
+    const url = estMobile() ? 'https://wa.me/?text=' + texte : 'https://web.whatsapp.com/send?text=' + texte;
+    window.open(url, '_blank', 'noopener');
   }
-  async function copierPartage(c, code) {
-    const texte = messagePartage(c, lienCampagnePublic(c.id, code));
-    try { await navigator.clipboard.writeText(texte); toast('Message copié : collez-le dans WhatsApp, Facebook…'); }
-    catch { prompt('Copiez ce message :', texte); }
+  async function copierTexte(texte, ok, invite) {
+    try { await navigator.clipboard.writeText(texte); toast(ok); }
+    catch { prompt(invite, texte); }
   }
+  const copierPartage = (c, code) => copierTexte(messagePartage(c, lienCampagnePublic(c.id, code), code),
+    'Message copié : collez-le dans WhatsApp, Facebook…', 'Copiez ce message :');
+  const copierLienCampagne = (c, code) => copierTexte(lienCampagnePublic(c.id, code),
+    'Lien de la campagne copié', 'Copiez ce lien :');
 
   window.IA = {
-    lienCampagnePublic, messagePartage, partagerCampagne, copierPartage,
+    lienCampagnePublic, lienSurMesurePublic, messagePartage, partagerCampagne, copierPartage, copierLienCampagne,
     sb, cfg, fcfa, date, joursRestants, esc, normTel, waLien, ETAPES_CAMPAGNE, ETAPES_DEMANDE, PAYS, nomPays, optionsPays, listeRegions,
     lib, badge, frise, jauge, msgErreur, toast, compresserImage, imageLisible, estHeic, convertirHeic, urlImageCampagne, occupe, txtVariante, blocPrix, delaiCampagne, rafraichirDelais
   };
