@@ -280,7 +280,42 @@
     finally { bouton.disabled = false; bouton.textContent = texte; }
   };
 
+  // Partage d'une campagne (WhatsApp, groupe, réseaux) : texte marketing prêt, lien vers la page de la campagne.
+  // code = code ambassadeur facultatif, pour que les ventes lui soient attribuées.
+  const lienCampagnePublic = (id, code) => `${cfg.urlSite}/${code ? '?ac=' + encodeURIComponent(code) : ''}#/campagne/${id}`;
+  const messagePartage = (c, url) => {
+    const prix = Number(c.prix_unitaire) || 0;
+    const ref = Number(c.prix_reference) || 0;
+    const cout = prix + (Number(c.frais_douane_unitaire) || 0);
+    const eco = ref > cout && (ref - cout) / ref >= 0.05 ? ref - cout : 0;
+    const fin = c.date_cloture ? new Date(c.date_cloture).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : '';
+    return [
+      `🛍️ *${c.titre}*`,
+      c.accroche ? c.accroche : null,
+      '',
+      `💰 *${fcfa(prix)}*${eco ? ` au lieu de ${fcfa(ref)} à Lomé, soit ${fcfa(eco)} d'économie` : ''} (hors taxes)`,
+      fin ? `⏳ Commandes ouvertes jusqu'au ${fin}` : null,
+      '📦 Commande groupée depuis la Chine, retrait à Lomé ou livraison chez vous',
+      '',
+      `👉 Réservez votre part ici : ${url}`
+    ].filter((l) => l !== null).join('\n');
+  };
+  async function partagerCampagne(c, code) {
+    const url = lienCampagnePublic(c.id, code);
+    const texte = messagePartage(c, url);
+    if (navigator.share) {
+      try { await navigator.share({ title: c.titre, text: texte }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    window.open('https://wa.me/?text=' + encodeURIComponent(texte), '_blank', 'noopener');
+  }
+  async function copierPartage(c, code) {
+    const texte = messagePartage(c, lienCampagnePublic(c.id, code));
+    try { await navigator.clipboard.writeText(texte); toast('Message copié : collez-le dans WhatsApp, Facebook…'); }
+    catch { prompt('Copiez ce message :', texte); }
+  }
+
   window.IA = {
+    lienCampagnePublic, messagePartage, partagerCampagne, copierPartage,
     sb, cfg, fcfa, date, joursRestants, esc, normTel, waLien, ETAPES_CAMPAGNE, ETAPES_DEMANDE, PAYS, nomPays, optionsPays, listeRegions,
     lib, badge, frise, jauge, msgErreur, toast, compresserImage, imageLisible, estHeic, convertirHeic, urlImageCampagne, occupe, txtVariante, blocPrix, delaiCampagne, rafraichirDelais
   };
