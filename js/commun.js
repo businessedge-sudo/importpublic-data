@@ -219,13 +219,13 @@
     const ref = Number(c.prix_reference) || 0;
     const prix = Number(c.prix_unitaire) || 0;
     // Comparaison honnête avec le prix en boutique à Lomé : on ajoute la douane par unité quand elle est connue
-    const cout = prix + (Number(c.frais_douane_unitaire) || 0);
+    const cout = prix + (c.type_prix === 'TTC' ? 0 : (Number(c.frais_douane_unitaire) || 0));
     const eco = ref > cout ? ref - cout : 0;
     const pct = eco ? Math.round((100 * eco) / ref) : 0;
     return `<div class="bloc-prix${petit ? ' petit' : ''}">
       <div class="bp-haut"><span class="bp-prix">${fcfa(prix)}</span>
         ${pct >= 5 ? `<span class="bp-avant"><small>À Lomé</small><s>${fcfa(ref)}</s></span>` : ''}</div>
-      <div class="bp-ht">Hors taxes${c.frais_douane_unitaire ? ` · douane ${fcfa(c.frais_douane_unitaire)} à l'arrivée` : ' · douane et livraison à l\'arrivée'}</div>
+      <div class="bp-ht">${c.type_prix === 'TTC' ? 'Tout compris · douane incluse' : `Hors taxes${c.frais_douane_unitaire ? ` · douane ${fcfa(c.frais_douane_unitaire)} à l'arrivée` : ' · douane et livraison à l\'arrivée'}`}</div>
       ${pct >= 5 ? `<div class="bp-eco"><span class="bp-long">Vous économisez</span><span class="bp-court">Économie</span><b>${fcfa(eco)}</b><em>-${pct} %</em></div>` : ''}
     </div>`;
   };
@@ -287,14 +287,14 @@
   const messagePartage = (c, url, code) => {
     const prix = Number(c.prix_unitaire) || 0;
     const ref = Number(c.prix_reference) || 0;
-    const cout = prix + (Number(c.frais_douane_unitaire) || 0);
+    const cout = prix + (c.type_prix === 'TTC' ? 0 : (Number(c.frais_douane_unitaire) || 0));
     const eco = ref > cout && (ref - cout) / ref >= 0.05 ? ref - cout : 0;
     const fin = c.date_cloture ? new Date(c.date_cloture).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : '';
     return [
       `🛍️ *${c.titre}*`,
       c.accroche ? c.accroche : null,
       '',
-      `💰 *${fcfa(prix)}*${eco ? ` au lieu de ${fcfa(ref)} à Lomé, soit ${fcfa(eco)} d'économie` : ''} (hors taxes)`,
+      `💰 *${fcfa(prix)}*${eco ? ` au lieu de ${fcfa(ref)} à Lomé, soit ${fcfa(eco)} d'économie` : ''} (${c.type_prix === 'TTC' ? 'tout compris, douane incluse' : 'hors taxes'})`,
       fin ? `⏳ Commandes ouvertes jusqu'au ${fin}` : null,
       '📦 Commande groupée depuis la Chine, retrait à Lomé ou livraison chez vous',
       '',
