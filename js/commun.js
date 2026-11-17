@@ -143,7 +143,7 @@
     if (/Invalid login credentials/i.test(m)) return 'Email ou mot de passe incorrect.';
     if (/Email not confirmed/i.test(m)) return 'Confirmez d\'abord votre email (regardez votre boîte de réception).';
     if (/User already registered/i.test(m)) return 'Un compte existe déjà avec cet email. Connectez-vous.';
-    if (/Database error saving new user/i.test(m)) return 'Ce numéro WhatsApp est peut-être déjà utilisé par un autre compte.';
+    if (/Database error saving new user/i.test(m)) return 'Ce numéro WhatsApp est déjà enregistré chez nous. Si nous vous avons envoyé un lien de suivi sur WhatsApp, ouvrez-le et touchez « Créer mon accès » : votre historique sera conservé. Sinon, écrivez-nous sur WhatsApp.';
     if (/Password should be/i.test(m)) return 'Le mot de passe doit faire au moins 6 caractères.';
     if (/rate limit/i.test(m)) return 'Trop de tentatives. Réessayez dans quelques minutes.';
     if (/Failed to fetch|NetworkError|Load failed/i.test(m)) return 'Connexion internet instable. Réessayez.';
